@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     private Vector3 _velocity;
     private bool _isJumping = false;
     private Vector3 _facing;
+    private bool _isHanging = false;
 
     private void Awake()
     {
@@ -34,6 +35,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CalculateMovement();
+    }
+
+    private void CalculateMovement()
+    {
         if (_controller.isGrounded)
         {
             if (_isJumping)
@@ -44,11 +50,6 @@ public class Player : MonoBehaviour
 
             _velocity.y = 0;
             _velocity.z = Input.GetAxisRaw("Horizontal") * _speed;
-
-            /*if (_velocity.z > 0)
-                _model.eulerAngles = Vector3.zero;
-            else if (_velocity.z < 0)
-                _model.eulerAngles = new Vector3(0, 180f, 0);*/
 
             if (_velocity.z > 0)
                 _facing.y = 0;
@@ -70,5 +71,11 @@ public class Player : MonoBehaviour
         _velocity.y += _gravity * Time.deltaTime;
 
         _controller.Move(_velocity * Time.deltaTime);
+    }
+
+    public void GrabLedge()
+    {
+        _controller.enabled = false;
+        _animator.SetBool("IsGrabbingLedge", true);
     }
 }
