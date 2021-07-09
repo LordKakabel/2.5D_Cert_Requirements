@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] float _gravity = -9.81f;
     [SerializeField] float _jumpHeight = 1f;
     [SerializeField] Transform _model = null;
+    [SerializeField] Vector3 _standUpOffset = new Vector3(0, 7.05012f, -1.1392f);
 
     private CharacterController _controller;
     private Animator _animator;
@@ -35,7 +36,11 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CalculateMovement();
+        if (_controller.enabled)
+            CalculateMovement();
+
+        if (_isHanging && Input.GetKeyDown(KeyCode.E))
+            ClimbUp();
     }
 
     private void CalculateMovement()
@@ -73,9 +78,32 @@ public class Player : MonoBehaviour
         _controller.Move(_velocity * Time.deltaTime);
     }
 
-    public void GrabLedge()
+    public void GrabLedge(Vector3 snapPosition)
     {
         _controller.enabled = false;
         _animator.SetBool("IsGrabbingLedge", true);
+        // Set other animation variables
+        transform.position = snapPosition;
+        _isHanging = true;
+    }
+
+    public void StandUp()
+    {
+        transform.position += _standUpOffset;
+    }
+
+    public void FinishStanding()
+    {
+        _isJumping = false;
+        _animator.SetBool("IsJumping", _isJumping);
+        _animator.SetBool("IsGrabbingLedge", false);
+        _animator.SetFloat("Speed", 0);
+        _controller.enabled = true;
+    }
+
+    private void ClimbUp()
+    {
+        _isHanging = false;
+        _animator.SetTrigger("ClimbUp");
     }
 }
