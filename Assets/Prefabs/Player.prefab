@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2059672851866584114}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -53,6 +53,7 @@ MonoBehaviour:
   _gravity: -9.81
   _jumpHeight: 10
   _model: {fileID: 2059672852615706410}
+  _standUpOffset: {x: 0, y: 7.05012, z: -1.1392}
 --- !u!33 &2059672851866584113
 MeshFilter:
   m_ObjectHideFlags: 0
