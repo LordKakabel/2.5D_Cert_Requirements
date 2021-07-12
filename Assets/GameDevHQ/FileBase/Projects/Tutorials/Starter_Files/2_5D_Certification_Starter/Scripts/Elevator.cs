@@ -39,12 +39,16 @@ public class Elevator : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.UpArrow) && _currentFloor > 0)
             {
                 _currentFloor--;
-                StartCoroutine(MoveOverSeconds(_floors[_currentFloor].position, _timeBetweenFloors));
+                StartCoroutine(
+                    MoveOverSeconds(
+                        _floors[_currentFloor].position, _timeBetweenFloors));
             }
             else if (Input.GetKeyDown(KeyCode.DownArrow) && _currentFloor < _floors.Length - 1)
             {
                 _currentFloor++;
-                StartCoroutine(MoveOverSeconds(_floors[_currentFloor].position, _timeBetweenFloors));
+                StartCoroutine(
+                    MoveOverSeconds(
+                        _floors[_currentFloor].position, _timeBetweenFloors));
             }
         }
     }
@@ -56,7 +60,9 @@ public class Elevator : MonoBehaviour
         Vector3 startingPosition = transform.position;
         while (elapsedTime < seconds)
         {
-            transform.position = Vector3.Lerp(startingPosition, end, (elapsedTime / seconds));
+            transform.position = Vector3.Lerp(
+                startingPosition, end, (elapsedTime / seconds));
+
             elapsedTime += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }

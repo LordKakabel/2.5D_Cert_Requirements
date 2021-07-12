@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] float _speed = 3f;
+    [SerializeField] float _climbSpeed = 1.5f;
     [SerializeField] float _gravity = -9.81f;
     [SerializeField] float _jumpHeight = 1f;
     [SerializeField] Transform _model = null;
@@ -16,6 +17,7 @@ public class Player : MonoBehaviour
     private bool _isJumping = false;
     private Vector3 _facing;
     private bool _isHanging = false;
+    private bool _canClimb = false;
 
     private void Awake()
     {
@@ -45,35 +47,48 @@ public class Player : MonoBehaviour
 
     private void CalculateMovement()
     {
-        if (_controller.isGrounded)
+        if (_canClimb)
         {
-            if (_isJumping)
+            _velocity.y = Input.GetAxisRaw("Vertical") * _climbSpeed;
+
+            if (Input.GetKeyDown(KeyCode.E))
             {
-                _isJumping = false;
-                _animator.SetBool("IsJumping", _isJumping);
-            }
-
-            _velocity.y = 0;
-            _velocity.z = Input.GetAxisRaw("Horizontal") * _speed;
-
-            if (_velocity.z > 0)
-                _facing.y = 0;
-            else if (_velocity.z < 0)
-                _facing.y = 180f;
-            _model.eulerAngles = _facing;
-
-            _animator.SetFloat("Speed", Mathf.Abs(_velocity.z));
-
-            if (Input.GetButtonDown("Jump"))
-            {
-                _velocity.y += _jumpHeight;
-
-                _isJumping = true;
-                _animator.SetBool("IsJumping", _isJumping);
+                _canClimb = false;
+                return;
             }
         }
+        else
+        {
+            if (_controller.isGrounded)
+            {
+                if (_isJumping)
+                {
+                    _isJumping = false;
+                    _animator.SetBool("IsJumping", _isJumping);
+                }
 
-        _velocity.y += _gravity * Time.deltaTime;
+                _velocity.y = 0;
+                _velocity.z = Input.GetAxisRaw("Horizontal") * _speed;
+
+                if (_velocity.z > 0)
+                    _facing.y = 0;
+                else if (_velocity.z < 0)
+                    _facing.y = 180f;
+                _model.eulerAngles = _facing;
+
+                _animator.SetFloat("Speed", Mathf.Abs(_velocity.z));
+
+                if (Input.GetButtonDown("Jump"))
+                {
+                    _velocity.y += _jumpHeight;
+
+                    _isJumping = true;
+                    _animator.SetBool("IsJumping", _isJumping);
+                }
+            }
+
+            _velocity.y += _gravity * Time.deltaTime;
+        }
 
         _controller.Move(_velocity * Time.deltaTime);
     }
@@ -105,5 +120,15 @@ public class Player : MonoBehaviour
     {
         _isHanging = false;
         _animator.SetTrigger("ClimbUp");
+    }
+
+    public void EnableLadderClimb()
+    {
+        _canClimb = true;
+    }
+
+    public void DisableLadderClimb()
+    {
+        _canClimb = false;
     }
 }
