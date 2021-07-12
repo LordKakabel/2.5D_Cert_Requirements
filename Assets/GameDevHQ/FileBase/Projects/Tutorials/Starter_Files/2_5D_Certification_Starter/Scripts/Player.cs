@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] float _jumpHeight = 1f;
     [SerializeField] Transform _model = null;
     [SerializeField] Vector3 _standUpOffset = new Vector3(0, 7.05012f, -1.1392f);
+    [SerializeField] AnimationClip _climbLadder = null;
 
     private CharacterController _controller;
     private Animator _animator;
@@ -28,6 +29,8 @@ public class Player : MonoBehaviour
         _animator = GetComponentInChildren<Animator>();
         if (!_animator)
             Debug.LogError(name + ": Animator component not found in children!");
+
+        
 
         if (!_model)
             Debug.LogError(name + ": Model child Transform not found.");
@@ -49,11 +52,14 @@ public class Player : MonoBehaviour
     {
         if (_canClimb)
         {
-            _velocity.y = Input.GetAxisRaw("Vertical") * _climbSpeed;
+            float verticalMovement = Input.GetAxisRaw("Vertical");
+            _velocity.y = verticalMovement * _climbSpeed;
+            _animator.SetFloat("ClimbSpeed", verticalMovement);
 
             if (Input.GetKeyDown(KeyCode.E))
             {
                 _canClimb = false;
+                _animator.SetBool("IsClimbing", _canClimb);
                 return;
             }
         }
@@ -125,10 +131,12 @@ public class Player : MonoBehaviour
     public void EnableLadderClimb()
     {
         _canClimb = true;
+        _animator.SetBool("IsClimbing", _canClimb);
     }
 
     public void DisableLadderClimb()
     {
         _canClimb = false;
+        _animator.SetBool("IsClimbing", _canClimb);
     }
 }
