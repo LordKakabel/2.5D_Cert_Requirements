@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Elevator : MonoBehaviour
 {
-    [SerializeField] private float _speed = 3f;
     [SerializeField] private Transform[] _floors = null;
     [SerializeField] private int _currentFloor = 0;
     [SerializeField] private float _timeBetweenFloors = 5f;

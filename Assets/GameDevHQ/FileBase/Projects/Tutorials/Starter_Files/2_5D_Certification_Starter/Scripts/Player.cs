@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] float _jumpHeight = 1f;
     [SerializeField] Transform _model = null;
     [SerializeField] Vector3 _standUpOffset = new Vector3(0, 7.05012f, -1.1392f);
+    [SerializeField] Vector3 _ladderMountOffset = new Vector3(0, 1.98848f, -3.688f);
     [SerializeField] AnimationClip _climbLadder = null;
 
     private CharacterController _controller;
@@ -103,7 +104,6 @@ public class Player : MonoBehaviour
     {
         _controller.enabled = false;
         _animator.SetBool("IsGrabbingLedge", true);
-        // Set other animation variables
         transform.position = snapPosition;
         _isHanging = true;
     }
@@ -130,6 +130,8 @@ public class Player : MonoBehaviour
 
     public void EnableLadderClimb()
     {
+        /*_isJumping = true;
+        _animator.SetBool("IsJumping", _isJumping);*/
         _canClimb = true;
         _animator.SetBool("IsClimbing", _canClimb);
     }
@@ -138,5 +140,26 @@ public class Player : MonoBehaviour
     {
         _canClimb = false;
         _animator.SetBool("IsClimbing", _canClimb);
+    }
+
+    public void Teleport(Vector3 position, bool isFacingRight)
+    {
+        _controller.enabled = false;
+
+        // Face correct direction and give a push off ladder
+        if (isFacingRight)
+        {
+            _facing.y = 0;
+            _velocity = new Vector3(0, 0, _speed);
+        }
+        else
+        {
+            _facing.y = 180f;
+            _velocity = new Vector3(0, 0, -_speed);
+        }
+        _model.eulerAngles = _facing;
+
+        transform.position += _ladderMountOffset;
+        _controller.enabled = true;
     }
 }
