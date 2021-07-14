@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] float _speed = 3f;
-    [SerializeField] float _climbSpeed = 1.5f;
-    [SerializeField] float _gravity = -9.81f;
-    [SerializeField] float _jumpHeight = 1f;
-    [SerializeField] Transform _model = null;
-    [SerializeField] Vector3 _standUpOffset = new Vector3(0, 7.05012f, -1.1392f);
-    [SerializeField] Vector3 _ladderMountOffset = new Vector3(0, 1.98848f, -3.688f);
-    [SerializeField] AnimationClip _climbLadder = null;
+    [SerializeField] private float _speed = 3f;
+    [SerializeField] private float _climbSpeed = 1.5f;
+    [SerializeField] private float _gravity = -9.81f;
+    [SerializeField] private float _jumpHeight = 1f;
+    [SerializeField] private Transform _model = null;
+    [SerializeField] private Vector3 _standUpOffset = new Vector3(0, 7.05012f, -1.1392f);
+    [SerializeField] private Vector3 _ladderMountOffset = new Vector3(0, 1.98848f, -3.688f);
+    [SerializeField] private float _rollingHeight = 1f;
+    [SerializeField] private Vector3 _rollingCenter = new Vector3(0, 0.5f, 0);
 
     private CharacterController _controller;
     private Animator _animator;
@@ -20,6 +21,8 @@ public class Player : MonoBehaviour
     private Vector3 _facing;
     private bool _isHanging = false;
     private bool _canClimb = false;
+    private Vector3 _controllerOriginalCenter;
+    private float _controllerOriginalHeight;
 
     private void Awake()
     {
@@ -92,6 +95,13 @@ public class Player : MonoBehaviour
                     _isJumping = true;
                     _animator.SetBool("IsJumping", _isJumping);
                 }
+
+                if (Input.GetKeyDown(KeyCode.LeftShift))
+                {
+                    _animator.SetTrigger("DiveRoll");
+                    _controller.center = _rollingCenter;
+                    _controller.height = _rollingHeight;
+                }
             }
 
             _velocity.y += _gravity * Time.deltaTime;
@@ -161,5 +171,11 @@ public class Player : MonoBehaviour
 
         transform.position += _ladderMountOffset;
         _controller.enabled = true;
+    }
+
+    private void RestoreControllerSize()
+    {
+        _controller.center = _controllerOriginalCenter;
+        _controller.height = _controllerOriginalHeight;
     }
 }
