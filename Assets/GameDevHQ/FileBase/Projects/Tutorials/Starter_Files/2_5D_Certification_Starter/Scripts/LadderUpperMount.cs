@@ -24,9 +24,12 @@ public class LadderUpperMount : MonoBehaviour
             Player player = other.GetComponent<Player>();
             if (player)
             {
-                player.Teleport(_snapPosition.position, _shouldPlayerFaceRight);
-                player.EnableLadderClimb();
-                _ladder.EnableLadderClimb();
+                if (!player.IsRolling())
+                {
+                    player.Teleport(_snapPosition.position, _shouldPlayerFaceRight);
+                    player.EnableLadderClimb();
+                    _ladder.EnableLadderClimb();
+                }
             }
         }
     }

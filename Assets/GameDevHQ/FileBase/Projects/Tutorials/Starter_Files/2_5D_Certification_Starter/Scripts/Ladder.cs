@@ -18,8 +18,11 @@ public class Ladder : MonoBehaviour
             Player player = other.GetComponent<Player>();
             if (player)
             {
-                player.EnableLadderClimb();
-                _isBeingUsed = true;
+                if (!player.IsRolling())
+                {
+                    player.EnableLadderClimb();
+                    _isBeingUsed = true;
+                }
             }
         }
     }

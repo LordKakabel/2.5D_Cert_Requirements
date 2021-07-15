@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     private bool _canClimb = false;
     private Vector3 _controllerOriginalCenter;
     private float _controllerOriginalHeight;
+    private bool _isRolling = false;
 
     private void Awake()
     {
@@ -34,10 +35,11 @@ public class Player : MonoBehaviour
         if (!_animator)
             Debug.LogError(name + ": Animator component not found in children!");
 
-        
-
         if (!_model)
             Debug.LogError(name + ": Model child Transform not found.");
+
+        _controllerOriginalCenter = _controller.center;
+        _controllerOriginalHeight = _controller.height;
 
         _facing = _model.eulerAngles;
     }
@@ -69,7 +71,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if (_controller.isGrounded)
+            if (_controller.isGrounded && !_isRolling)
             {
                 if (_isJumping)
                 {
@@ -98,9 +100,19 @@ public class Player : MonoBehaviour
 
                 if (Input.GetKeyDown(KeyCode.LeftShift))
                 {
+                    _isRolling = true;
                     _animator.SetTrigger("DiveRoll");
                     _controller.center = _rollingCenter;
                     _controller.height = _rollingHeight;
+
+                    if (_facing.y == 0)
+                    {
+                        _velocity = new Vector3(0, 0, _speed);
+                    }
+                    else
+                    {
+                        _velocity = new Vector3(0, 0, -_speed);
+                    }
                 }
             }
 
@@ -173,9 +185,21 @@ public class Player : MonoBehaviour
         _controller.enabled = true;
     }
 
+    public void FinishRoll()
+    {
+        _velocity = Vector3.zero;
+        RestoreControllerSize();
+    }
+
     private void RestoreControllerSize()
     {
         _controller.center = _controllerOriginalCenter;
         _controller.height = _controllerOriginalHeight;
+        _isRolling = false;
+    }
+
+    public bool IsRolling()
+    {
+        return _isRolling;
     }
 }
