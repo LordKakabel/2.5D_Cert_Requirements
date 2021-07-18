@@ -79,6 +79,8 @@ public class Player : MonoBehaviour
                     _animator.SetBool("IsJumping", _isJumping);
                 }
 
+                #region Velocity and Facing
+
                 _velocity.y = 0;
                 _velocity.z = Input.GetAxisRaw("Horizontal") * _speed;
 
@@ -89,6 +91,8 @@ public class Player : MonoBehaviour
                 _model.eulerAngles = _facing;
 
                 _animator.SetFloat("Speed", Mathf.Abs(_velocity.z));
+
+                #endregion
 
                 if (Input.GetButtonDown("Jump"))
                 {
@@ -152,8 +156,6 @@ public class Player : MonoBehaviour
 
     public void EnableLadderClimb()
     {
-        /*_isJumping = true;
-        _animator.SetBool("IsJumping", _isJumping);*/
         _canClimb = true;
         _animator.SetBool("IsClimbing", _canClimb);
     }
