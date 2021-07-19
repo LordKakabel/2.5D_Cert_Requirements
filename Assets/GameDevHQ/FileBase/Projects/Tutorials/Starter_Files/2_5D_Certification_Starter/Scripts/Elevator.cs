@@ -21,7 +21,7 @@ public class Elevator : MonoBehaviour
         KeyCode.Alpha8,
         KeyCode.Alpha9 };*/
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (_isPlayerOnFloor && !_hasTarget)
         {
@@ -69,32 +69,6 @@ public class Elevator : MonoBehaviour
         transform.position = end;
         _hasTarget = false;
     }
-
-    /*private void FixedUpdate()
-    {
-        if (_target)
-        {
-            _movementTimer += Time.deltaTime;
-
-            if (_movementTimer < _timeBetweenFloors)
-            {
-                float step = _speed * Time.deltaTime;
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    _target.position,
-                    step);
-
-                transform.position = Vector3.MoveTowards(
-                    transform.position,
-                    _target.position,
-                    _speed * Time.deltaTime);
-            }
-            if (Vector3.Distance(transform.position, _target.position) < 0.01f)
-            {
-                _target = null;
-            }
-        }
-    }*/
 
     private void OnTriggerEnter(Collider other)
     {
