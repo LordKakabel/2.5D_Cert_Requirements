@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _winPanel = null;
     [SerializeField] private GameObject _pausePanel = null;
     [SerializeField] private GameObject _pauseText = null;
+    [SerializeField] private GameObject _creditsPanel = null;
 
     private int _energy = 0;
 
@@ -34,6 +35,9 @@ public class UIManager : MonoBehaviour
 
         if (!_energyDisplay)
             Debug.LogError(name + ": Energy TextMeshProUGUI not found!");
+
+        if (!_creditsPanel)
+            Debug.LogError(name + ": Credits panel object not found!");
     }
 
     private void Start()
@@ -59,6 +63,7 @@ public class UIManager : MonoBehaviour
 
     public void TogglePause()
     {
+        _creditsPanel.SetActive(false);
         _pauseText.SetActive(!_pauseText.activeSelf);
         _pausePanel.SetActive(!_pausePanel.activeSelf);
 
@@ -79,6 +84,11 @@ public class UIManager : MonoBehaviour
         #else
 		Application.Quit();
         #endif
+    }
+
+    public void Credits()
+    {
+        _creditsPanel.SetActive(true);
     }
 
     private void UpdateDisplay()
