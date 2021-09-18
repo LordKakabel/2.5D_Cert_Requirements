@@ -21,7 +21,7 @@ public class Elevator : MonoBehaviour
         KeyCode.Alpha8,
         KeyCode.Alpha9 };*/
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (_isPlayerOnFloor && !_hasTarget)
         {
@@ -49,6 +49,22 @@ public class Elevator : MonoBehaviour
                     MoveOverSeconds(
                         _floors[_currentFloor].position, _timeBetweenFloors));
             }
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        
+    }
+
+    public void Recall(int floor)
+    {
+        if (!_hasTarget && _currentFloor != floor)
+        {
+            _currentFloor = floor;
+            StartCoroutine(
+                    MoveOverSeconds(
+                        _floors[_currentFloor].position, _timeBetweenFloors));
         }
     }
 

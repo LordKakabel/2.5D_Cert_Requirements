@@ -44,4 +44,9 @@ public class Ladder : MonoBehaviour
     {
         _isBeingUsed = true;
     }
+
+    public void DisableLadderClimb()
+    {
+        _isBeingUsed = false;
+    }
 }

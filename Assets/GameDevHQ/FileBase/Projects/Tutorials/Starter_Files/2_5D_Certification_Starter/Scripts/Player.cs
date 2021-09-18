@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cinemachine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,9 +11,14 @@ public class Player : MonoBehaviour
     [SerializeField] private float _jumpHeight = 1f;
     [SerializeField] private Transform _model = null;
     [SerializeField] private Vector3 _standUpOffset = new Vector3(0, 7.05012f, -1.1392f);
-    [SerializeField] private Vector3 _ladderMountOffset = new Vector3(0, 1.98848f, -3.688f);
     [SerializeField] private float _rollingHeight = 1f;
     [SerializeField] private Vector3 _rollingCenter = new Vector3(0, 0.5f, 0);
+    [SerializeField] private float _deathZone = 8f;
+    [SerializeField] private Transform _respawnPoint = null;
+    [SerializeField] private Quaternion _victoryRotation = new Quaternion(0, 90f, 0, 0);
+    [SerializeField] private CinemachineVirtualCamera _virtualCamera = null;
+    [SerializeField] private float _xZoom = 10f;
+
 
     private CharacterController _controller;
     private Animator _animator;
@@ -24,6 +30,7 @@ public class Player : MonoBehaviour
     private Vector3 _controllerOriginalCenter;
     private float _controllerOriginalHeight;
     private bool _isRolling = false;
+    private bool _isCheering = false;
 
     private void Awake()
     {
@@ -44,20 +51,30 @@ public class Player : MonoBehaviour
         _facing = _model.eulerAngles;
     }
 
+    private void Start()
+    {
+        if (!_virtualCamera)
+            Debug.LogError(name + ": Virtual Camera not found!");
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (_controller.enabled)
-            CalculateMovement();
+        if (!_isCheering)
+        {
+            if (_controller.enabled)
+                CalculateMovement();
 
-        if (_isHanging && Input.GetKeyDown(KeyCode.E))
-            ClimbUp();
+            if (_isHanging && Input.GetKeyDown(KeyCode.E))
+                ClimbUp();
+        }
     }
 
     private void CalculateMovement()
     {
         if (_canClimb)
         {
+            _velocity.z = 0;
             float verticalMovement = Input.GetAxisRaw("Vertical");
             _velocity.y = verticalMovement * _climbSpeed;
             _animator.SetFloat("ClimbSpeed", verticalMovement);
@@ -124,6 +141,11 @@ public class Player : MonoBehaviour
         }
 
         _controller.Move(_velocity * Time.deltaTime);
+
+        if (transform.position.y < _deathZone)
+        {
+            transform.position = _respawnPoint.position;
+        }
     }
 
     public void GrabLedge(Vector3 snapPosition)
@@ -166,7 +188,7 @@ public class Player : MonoBehaviour
         _animator.SetBool("IsClimbing", _canClimb);
     }
 
-    public void Teleport(Vector3 position, bool isFacingRight)
+    public void Teleport(Transform target, bool isFacingRight)
     {
         _controller.enabled = false;
 
@@ -174,16 +196,16 @@ public class Player : MonoBehaviour
         if (isFacingRight)
         {
             _facing.y = 0;
-            _velocity = new Vector3(0, 0, _speed);
+            _velocity = Vector3.zero;
         }
         else
         {
             _facing.y = 180f;
-            _velocity = new Vector3(0, 0, -_speed);
+            _velocity = Vector3.zero;
         }
         _model.eulerAngles = _facing;
 
-        transform.position += _ladderMountOffset;
+        transform.position = target.position;
         _controller.enabled = true;
     }
 
@@ -203,5 +225,13 @@ public class Player : MonoBehaviour
     public bool IsRolling()
     {
         return _isRolling;
+    }
+
+    public void Dance()
+    {
+        _animator.SetBool("IsCheering", true);
+        _model.localRotation = _victoryRotation;
+        _isCheering = true;
+        _virtualCamera.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset.x = _xZoom;
     }
 }
