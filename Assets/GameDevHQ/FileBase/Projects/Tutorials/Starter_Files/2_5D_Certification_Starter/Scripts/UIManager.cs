@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -20,60 +21,97 @@ public class UIManager : MonoBehaviour
     #endregion
 
     [SerializeField] private TextMeshProUGUI _energyDisplay = null;
-    [SerializeField] private TextMeshProUGUI _goalDisplay = null;
     [SerializeField] private int _energyGoal = 13;
     [SerializeField] private GameObject _winPanel = null;
     [SerializeField] private GameObject _pausePanel = null;
     [SerializeField] private GameObject _pauseText = null;
     [SerializeField] private GameObject _creditsPanel = null;
+    [SerializeField] private int _startingSceneIndex = 0;
+    [SerializeField] private int _firstLevelSceneIndex = 1;
+    [SerializeField] private GameObject _titlePanel = null;
 
     private int _energy = 0;
+    private TextMeshProUGUI _goalDisplay;
 
     private void Awake()
     {
         _instance = this;
+        DontDestroyOnLoad(gameObject);
 
         if (!_energyDisplay)
             Debug.LogError(name + ": Energy TextMeshProUGUI not found!");
 
         if (!_creditsPanel)
             Debug.LogError(name + ": Credits panel object not found!");
+
+        if (!_titlePanel)
+            Debug.LogError(name + ": Title panel object not found!");
     }
 
     private void Start()
     {
-        if (!_goalDisplay)
-            Debug.LogError(name + ": Goal TextMeshProUGUI not found!");
+        _energyDisplay.text = "";
+    }
 
+    public void GetGoalDisplay(TextMeshProUGUI goalTMP)
+    {
+        _goalDisplay = goalTMP;
         UpdateDisplay();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!_titlePanel.activeSelf)
         {
-            TogglePause();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                TogglePause();
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                StartGame();
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) && _pausePanel.activeSelf)
+        if (Input.GetKeyDown(KeyCode.Q) && (_pausePanel.activeSelf || _creditsPanel.activeSelf || _titlePanel.activeSelf || _winPanel.activeSelf))
         {
             Quit();
+        }
+
+        if (Input.GetKeyDown(KeyCode.C) && (_pausePanel.activeSelf || _winPanel.activeSelf))
+        {
+            Credits();
+        }
+
+        if (Input.GetKeyDown(KeyCode.P) && _winPanel.activeSelf)
+        {
+            ReloadGame();
         }
     }
 
     public void TogglePause()
     {
-        _creditsPanel.SetActive(false);
-        _pauseText.SetActive(!_pauseText.activeSelf);
-        _pausePanel.SetActive(!_pausePanel.activeSelf);
-
-        if (_pausePanel.activeSelf)
+        if (_winPanel.activeSelf)
         {
-            Time.timeScale = 0;
+            _creditsPanel.SetActive(false);
         }
         else
         {
-            Time.timeScale = 1;
+            _creditsPanel.SetActive(false);
+            _pauseText.SetActive(!_pauseText.activeSelf);
+            _pausePanel.SetActive(!_pausePanel.activeSelf);
+
+            if (_pausePanel.activeSelf)
+            {
+                Time.timeScale = 0;
+            }
+            else
+            {
+                Time.timeScale = 1;
+            }
         }
     }
 
@@ -89,6 +127,20 @@ public class UIManager : MonoBehaviour
     public void Credits()
     {
         _creditsPanel.SetActive(true);
+    }
+
+    public void ReloadGame()
+    {
+        _winPanel.SetActive(false);
+        SceneManager.LoadScene(_startingSceneIndex);
+    }
+
+    public void StartGame()
+    {
+        _titlePanel.SetActive(false);
+        _pauseText.SetActive(true);
+
+        SceneManager.LoadScene(_firstLevelSceneIndex);
     }
 
     private void UpdateDisplay()
@@ -112,6 +164,7 @@ public class UIManager : MonoBehaviour
     {
         if (_energy >= _energyGoal)
         {
+            _goalDisplay.enabled = false;
             _energyDisplay.enabled = false;
             _winPanel.SetActive(true);
 

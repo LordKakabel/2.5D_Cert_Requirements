@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: e652b5c84f69d474383a580e32ad284b
+  - enabled: 1
     path: Assets/GameDevHQ/FileBase/Projects/Tutorials/Starter_Files/2_5D_Certification_Starter/Scenes/2.5D
       Certification Starter Scene.unity
     guid: ce6296a2b417948448b7c10c88c087cc
